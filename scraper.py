@@ -21,7 +21,7 @@ LIST_URL = BASE + "/sbc/community.do"
 LIST_PAGES = 2
 DELAY = 0.8
 TIMEOUT = 20
-MAX_CARDS = 30                    # 전체 최신글 중 보여줄 카드 수
+MAX_CARDS = 16                    # 전체 최신글 중 보여줄 카드 수
 KST = timezone(timedelta(hours=9))
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -199,67 +199,66 @@ def render(cards, generated):
     for i, c in enumerate(cards):
         comm = html.escape(c["community"]); title = html.escape(c["title"])
         meta = html.escape(c.get("meta") or ""); url = html.escape(c["url"])
-        photos = c.get("photos") or []; delay = f"{i * 0.06:.2f}s"
+        photos = c.get("photos") or []; delay = f"{i * 0.05:.2f}s"
         if photos:
             layers = "".join(
                 f'<div class="photo{" on" if k == 0 else ""}" '
                 f'style="background-image:url(\'{html.escape(p)}\')"></div>'
                 for k, p in enumerate(photos))
-            stack = f'<div class="stack">{layers}</div>'
+            thumb = f'<div class="thumb"><div class="stack">{layers}</div></div>'
         else:
-            stack = (f'<div class="stack"><div class="photo on noimg" '
+            thumb = (f'<div class="thumb"><div class="stack"><div class="photo on noimg" '
                      f'style="background:{gradient_for(c["community"])}">'
-                     f'<div class="glyph">{comm}</div></div></div>')
+                     f'<div class="glyph">{comm}</div></div></div></div>')
         items.append(f'''<a class="card" style="--i:{delay}" href="{url}" target="_blank" rel="noopener">
-  {stack}
-  <div class="scrim"></div>
-  <span class="badge"><span class="dot"></span>{comm}</span>
-  <div class="body"><div class="title">{title}</div><div class="meta">{meta}</div></div>
+  {thumb}
+  <div class="body">
+    <div class="eyebrow">{comm}</div>
+    <div class="title">{title}</div>
+    <div class="date">{meta}</div>
+  </div>
 </a>''')
     grid = "\n".join(items)
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>성북50+ 커뮤니티 소식</title>
+<title>커뮤니티 소식</title>
 <style>
-  :root{{--ink:#1d1d1f;--dim:#6e6e73;--glass:rgba(255,255,255,.16);--glass-brd:rgba(255,255,255,.32);
+  :root{{--ink:#1d1d1f;--dim:#8e8e93;--line:#ececf0;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;}}
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:8px}}
-  header{{padding:4px 4px 2px}}
-  h1{{font-size:clamp(20px,2.6vw,26px);font-weight:700;letter-spacing:-.03em}}
-  .sub-h{{color:var(--dim);font-size:13.5px;margin-top:4px}}
-  .grid{{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));padding:14px 4px}}
-  .card{{position:relative;aspect-ratio:3/2;border-radius:18px;overflow:hidden;background:#111;
-    text-decoration:none;color:#fff;display:block;box-shadow:0 8px 24px rgba(0,0,0,.12);
-    opacity:0;transform:translateY(14px);animation:up .6s var(--i,0s) forwards cubic-bezier(.22,.61,.36,1)}}
+  header{{padding:6px 6px 14px;border-bottom:1px solid var(--line);margin:0 4px 4px}}
+  h1{{font-size:clamp(22px,2.8vw,30px);font-weight:700;letter-spacing:-.03em}}
+  .sub-h{{color:var(--dim);font-size:14px;margin-top:6px}}
+  .grid{{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:18px 4px}}
+  .card{{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .25s ease,box-shadow .25s ease;
+    opacity:0;transform:translateY(14px);animation:up .55s var(--i,0s) forwards cubic-bezier(.22,.61,.36,1)}}
+  .card:hover{{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.10)}}
   @keyframes up{{to{{opacity:1;transform:none}}}}
-  .stack{{position:absolute;inset:0;transition:transform .8s cubic-bezier(.22,.61,.36,1)}}
-  .card:hover .stack{{transform:scale(1.06)}}
+  .thumb{{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;background:#f2f2f7}}
+  .stack{{position:absolute;inset:0}}
   .photo{{position:absolute;inset:0;background-size:cover;background-position:center;
-    opacity:0;transition:opacity .9s ease}}
+    opacity:0;transition:opacity .9s ease,transform .8s ease}}
   .photo.on{{opacity:1}}
+  .card:hover .photo.on{{transform:scale(1.05)}}
   .noimg{{display:flex;align-items:center;justify-content:center}}
-  .noimg .glyph{{font-size:clamp(30px,5vw,52px);font-weight:800;letter-spacing:-.04em;
-    color:rgba(255,255,255,.12);text-align:center;line-height:.92;padding:0 10%}}
-  .scrim{{position:absolute;inset:0;background:linear-gradient(180deg,
-    rgba(0,0,0,.02) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.34) 62%,rgba(0,0,0,.82) 100%)}}
-  .badge{{position:absolute;top:13px;left:13px;font-size:12px;font-weight:600;
-    padding:5px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-brd);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:inline-flex;align-items:center;gap:6px}}
-  .badge .dot{{width:6px;height:6px;border-radius:50%;background:#4ade80}}
-  .body{{position:absolute;left:0;right:0;bottom:0;padding:16px}}
-  .title{{font-size:16px;font-weight:700;line-height:1.28;letter-spacing:-.01em;
-    text-shadow:0 2px 16px rgba(0,0,0,.5);
+  .noimg .glyph{{font-size:clamp(26px,4.5vw,44px);font-weight:800;letter-spacing:-.04em;
+    color:rgba(255,255,255,.16);text-align:center;line-height:.92;padding:0 10%}}
+  .body{{padding:16px 16px 18px}}
+  .eyebrow{{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.01em}}
+  .title{{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.38;margin-top:8px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
-  .meta{{margin-top:7px;font-size:12px;color:rgba(255,255,255,.78)}}
+  .date{{font-size:12.5px;color:var(--dim);margin-top:12px}}
   .foot{{color:var(--dim);font-size:12px;text-align:center;padding:8px 0 14px}}
   @media (prefers-reduced-motion:reduce){{.card{{animation:none;opacity:1;transform:none}}
-    .card:hover .stack{{transform:none}}}}
+    .card:hover .photo.on{{transform:none}}}}
 </style></head>
 <body>
-  <header><h1>성북50+ 커뮤니티 소식</h1>
-  <div class="sub-h">최신 글을 올린 커뮤니티 순서로 보여드려요</div></header>
+  <header><h1>커뮤니티 소식</h1>
+  <div class="sub-h">우리가 함께한 활동을 기록하고, 모두에게 공유해요</div></header>
   <div class="grid">
 {grid}
   </div>

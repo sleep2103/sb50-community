@@ -1,0 +1,38 @@
+name: 커뮤니티 보드 자동 갱신
+
+on:
+  schedule:
+    - cron: "0 21 * * *"      # 매일 06:00(KST) = 21:00(UTC) 자동 실행
+  workflow_dispatch:            # '지금 실행' 버튼으로 수동 실행도 가능
+  push:
+    branches: [ main ]          # 파일 올리면 즉시 한 번 실행
+
+permissions:
+  contents: write               # index.html을 다시 저장(커밋)할 권한
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 커뮤니티 방문 → index.html 생성
+        run: python scraper.py --out index.html
+
+      - name: 변경사항 저장(커밋)
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "actions@github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "자동 갱신: 커뮤니티 최신 글 보드"
+            git push
+          fi

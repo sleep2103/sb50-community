@@ -33,6 +33,11 @@ RE_IMG = re.compile(r'(/upload/im/[^"\'\)\s]+?\.(?:jpg|jpeg|png|gif))', re.I)
 RE_AUTHORDATE = re.compile(
     r'([가-힣A-Za-z]{2,12})\s*\(\s*(\d{4}-\d{2}-\d{2})\s+\d{2}:\d{2}:\d{2}\s*\)')
 
+# 콘텐츠가 아닌 이미지(센터 로고 등)는 배경으로 쓰지 않음
+IMG_EXCLUDE = (
+    "36dd6ba3-8569-4d3c-9d75-2dddec9537a1",  # 성북50+ 센터 로고
+)
+
 
 # ------- 내장 시드 데이터 (첫 화면 생성용. 이후 실제 방문이 덮어씀) -------
 SEED_CARDS = [
@@ -149,11 +154,18 @@ def gather():
         photo, author = None, ""
         try:
             detail = fetch(post_url); time.sleep(DELAY)
-            im = RE_IMG.search(detail)
-            if im: photo = BASE + im.group(1)
             ad = RE_AUTHORDATE.search(detail)
             if ad:
                 author = clean(ad.group(1)); date = ad.group(2)
+            # 본문 영역만: 작성자·날짜 이후 ~ 푸터 이전 (상단 헤더 로고 제외)
+            start = ad.end() if ad else 0
+            fend = re.search(r'패밀리사이트|Copyright|커뮤니티 가입', detail)
+            body = detail[start: fend.start() if fend else len(detail)]
+            for path in RE_IMG.findall(body):
+                if any(bad in path for bad in IMG_EXCLUDE):
+                    continue
+                photo = BASE + path
+                break
         except (URLError, HTTPError) as e:
             print(f"[!] {name} 글 실패: {e}", file=sys.stderr)
 

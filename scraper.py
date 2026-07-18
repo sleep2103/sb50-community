@@ -207,13 +207,11 @@ def render(cards, generated):
                 for k, p in enumerate(photos))
             thumb = f'<div class="thumb"><div class="stack">{layers}</div></div>'
         else:
-            thumb = (f'<div class="thumb"><div class="stack"><div class="photo on noimg" '
-                     f'style="background:{gradient_for(c["community"])}">'
-                     f'<div class="glyph">{comm}</div></div></div></div>')
+            thumb = (f'<div class="thumb noimg"><div class="glyph">{comm}</div></div>')
         items.append(f'''<a class="card" style="--i:{delay}" href="{url}" target="_blank" rel="noopener">
   {thumb}
   <div class="body">
-    <div class="eyebrow">{comm}</div>
+    <div class="eyebrow"><span class="dot"></span>{comm}</div>
     <div class="title">{title}</div>
     <div class="date">{meta}</div>
   </div>
@@ -224,7 +222,7 @@ def render(cards, generated):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>커뮤니티 소식</title>
 <style>
-  :root{{--ink:#1d1d1f;--dim:#8e8e93;--line:#ececf0;
+  :root{{--ink:#1d1d1f;--dim:#8e8e93;--line:#ececf0;--accent:#0071e3;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;}}
   *{{box-sizing:border-box;margin:0;padding:0}}
   body{{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:8px}}
@@ -244,12 +242,16 @@ def render(cards, generated):
     opacity:0;transition:opacity .9s ease,transform .8s ease}}
   .photo.on{{opacity:1}}
   .card:hover .photo.on{{transform:scale(1.05)}}
-  .noimg{{display:flex;align-items:center;justify-content:center}}
-  .noimg .glyph{{font-size:clamp(26px,4.5vw,44px);font-weight:800;letter-spacing:-.04em;
-    color:rgba(255,255,255,.16);text-align:center;line-height:.92;padding:0 10%}}
+  /* 사진 없는 카드: 차분한 회색 톤 + 커뮤니티 이름 크게 */
+  .thumb.noimg{{display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(150deg,#eef0f3,#dfe3e8)}}
+  .thumb.noimg .glyph{{font-size:clamp(20px,3vw,30px);font-weight:800;letter-spacing:-.03em;
+    color:#b7bcc4;text-align:center;line-height:1.15;padding:0 14%}}
   .body{{padding:16px 16px 18px}}
-  .eyebrow{{font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.01em}}
-  .title{{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.38;margin-top:8px;
+  .eyebrow{{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
+    color:var(--accent);letter-spacing:.01em}}
+  .eyebrow .dot{{width:6px;height:6px;border-radius:50%;background:var(--accent)}}
+  .title{{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.38;margin-top:9px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
   .date{{font-size:12.5px;color:var(--dim);margin-top:12px}}
   .foot{{color:var(--dim);font-size:12px;text-align:center;padding:8px 0 14px}}

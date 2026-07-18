@@ -1,247 +1,241 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>성북50+ 커뮤니티 소식</title>
 <style>
-  :root{--ink:#1d1d1f;--dim:#8e8e93;--line:#ececf0;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;}
+  :root{--ink:#1d1d1f;--dim:#6e6e73;--glass:rgba(255,255,255,.16);--glass-brd:rgba(255,255,255,.32);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:6px}
-  .head{padding:6px 6px 4px}
-  h1{font-size:24px;font-weight:700;letter-spacing:-.02em}
-  .sub-h{color:var(--dim);font-size:14px;margin-top:4px}
-  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));padding:12px 6px}
-  .card{display:flex;flex-direction:column;min-height:210px;border-radius:18px;padding:20px;
-    text-decoration:none;color:var(--ink);transition:transform .25s ease,box-shadow .25s ease;overflow:hidden}
-  .card:hover{transform:translateY(-3px)}
-  .plain{background:#fff;border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  .plain:hover{box-shadow:0 10px 24px rgba(0,0,0,.10)}
-  .photo{background-size:cover;background-position:center;color:#fff}
-  .photo:hover{box-shadow:0 12px 28px rgba(0,0,0,.28)}
-  .grow{flex:1}
-  .pill{align-self:flex-start;font-size:12px;font-weight:600;color:#6e6e73;background:#f2f2f7;padding:5px 11px;border-radius:20px}
-  .pill.glass{color:#fff;background:rgba(255,255,255,.24)}
-  .title{font-size:15.5px;font-weight:600;line-height:1.45;margin-top:12px}
-  .title.light{font-size:16px;font-weight:700;text-shadow:0 1px 12px rgba(0,0,0,.4)}
-  .sub{font-size:13px;color:#6e6e73;line-height:1.5;margin-top:6px}
-  .meta{font-size:12.5px;color:var(--dim);margin-top:10px}
-  .meta.light{color:rgba(255,255,255,.85)}
-  .foot{text-align:center;color:var(--dim);font-size:12px;padding:6px 0 12px}
+  body{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:8px}
+  header{padding:4px 4px 2px}
+  h1{font-size:clamp(20px,2.6vw,26px);font-weight:700;letter-spacing:-.03em}
+  .sub-h{color:var(--dim);font-size:13.5px;margin-top:4px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));padding:14px 4px}
+  .card{position:relative;aspect-ratio:3/2;border-radius:18px;overflow:hidden;background:#111;
+    text-decoration:none;color:#fff;display:block;box-shadow:0 8px 24px rgba(0,0,0,.12);
+    opacity:0;transform:translateY(14px);animation:up .6s var(--i,0s) forwards cubic-bezier(.22,.61,.36,1)}
+  @keyframes up{to{opacity:1;transform:none}}
+  .stack{position:absolute;inset:0;transition:transform .8s cubic-bezier(.22,.61,.36,1)}
+  .card:hover .stack{transform:scale(1.06)}
+  .photo{position:absolute;inset:0;background-size:cover;background-position:center;
+    opacity:0;transition:opacity .9s ease}
+  .photo.on{opacity:1}
+  .noimg{display:flex;align-items:center;justify-content:center}
+  .noimg .glyph{font-size:clamp(30px,5vw,52px);font-weight:800;letter-spacing:-.04em;
+    color:rgba(255,255,255,.12);text-align:center;line-height:.92;padding:0 10%}
+  .scrim{position:absolute;inset:0;background:linear-gradient(180deg,
+    rgba(0,0,0,.02) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.34) 62%,rgba(0,0,0,.82) 100%)}
+  .badge{position:absolute;top:13px;left:13px;font-size:12px;font-weight:600;
+    padding:5px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-brd);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:inline-flex;align-items:center;gap:6px}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:#4ade80}
+  .body{position:absolute;left:0;right:0;bottom:0;padding:16px}
+  .title{font-size:16px;font-weight:700;line-height:1.28;letter-spacing:-.01em;
+    text-shadow:0 2px 16px rgba(0,0,0,.5);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .meta{margin-top:7px;font-size:12px;color:rgba(255,255,255,.78)}
+  .foot{color:var(--dim);font-size:12px;text-align:center;padding:8px 0 14px}
+  @media (prefers-reduced-motion:reduce){.card{animation:none;opacity:1;transform:none}
+    .card:hover .stack{transform:none}}
 </style></head>
 <body>
-  <div class="head"><h1>성북50+ 커뮤니티 소식</h1>
-  <div class="sub-h">최신 글을 올린 커뮤니티 순서로 보여드려요</div></div>
+  <header><h1>성북50+ 커뮤니티 소식</h1>
+  <div class="sub-h">최신 글을 올린 커뮤니티 순서로 보여드려요</div></header>
   <div class="grid">
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=20342101&amp;POST_NO=9517" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/06/e971640b-4539-4e62-903b-a16f54de7d7c.png')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">덩실덩실 신나게 춤추시네요!</div>
-  <div class="meta light">2026.06.25</div>
+<a class="card" style="--i:0.00s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=20342101&amp;POST_NO=9517" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/e971640b-4539-4e62-903b-a16f54de7d7c.png')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/0c20cb09-1a99-4997-a487-5fb044248c4e.png')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/40e8b9f6-75e9-4eea-a8c1-ce8f69cb41e0.png')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/7040f9b4-1cb8-4d93-aacc-9a53000fe108.png')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">덩실덩실 신나게 춤추시네요!</div><div class="meta">2026.06.25</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=20211556&amp;POST_NO=9515" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">2026.06.24</div>
+<a class="card" style="--i:0.06s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=20211556&amp;POST_NO=9515" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">2026.06.24</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37349798&amp;POST_NO=9479" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/06/27610770-9aa1-4b08-97d0-3730ef3ede92.png')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">굿닥터 공연 _ 신도림 오페라 하우스에서</div>
-  <div class="meta light">2026.06.13</div>
+<a class="card" style="--i:0.12s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37349798&amp;POST_NO=9479" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/27610770-9aa1-4b08-97d0-3730ef3ede92.png')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/e40ca370-f4e5-47fd-be4f-8c5ef9a31e2c.jpg')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/06/95f6f57b-c9f4-43fa-892e-83ce67ddb1d6.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">굿닥터 공연 _ 신도림 오페라 하우스에서</div><div class="meta">2026.06.13</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=45901904&amp;POST_NO=9475" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title">(2026.6.12) 성북50+센터 성북순수사진예술 커뮤니티활동</div>
-  
-  <div class="grow"></div>
-  <div class="meta">2026.06.12</div>
+<a class="card" style="--i:0.18s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=45901904&amp;POST_NO=9475" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">(2026.6.12) 성북50+센터 성북순수사진예술 커뮤니티활동</div><div class="meta">2026.06.12</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=4347664&amp;POST_NO=9388" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/05/90b7a8f4-3016-4602-811d-467c5a43755e.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">화계사와 사찰림, 하심의 길</div>
-  <div class="meta light">2026.05.17</div>
+<a class="card" style="--i:0.24s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=4347664&amp;POST_NO=9388" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/05/90b7a8f4-3016-4602-811d-467c5a43755e.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">화계사와 사찰림, 하심의 길</div><div class="meta">2026.05.17</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=45896744&amp;POST_NO=9300" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/04/3f5e1ffc-43d8-4be1-b57a-7802df8b022d.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">향수에도 ‘사용기한’이 있을까요?</div>
-  <div class="meta light">2026.04.16</div>
+<a class="card" style="--i:0.30s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=45896744&amp;POST_NO=9300" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/04/3f5e1ffc-43d8-4be1-b57a-7802df8b022d.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">향수에도 ‘사용기한’이 있을까요?</div><div class="meta">2026.04.16</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=44852593&amp;POST_NO=9124" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/02/a1b94fed-8a72-4488-819b-ece935e4d331.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">시립성북청소년센터 &amp;#39;행복동행학교&amp;#39; 참가자 모집</div>
-  <div class="meta light">2026.02.22</div>
+<a class="card" style="--i:0.36s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=44852593&amp;POST_NO=9124" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/02/a1b94fed-8a72-4488-819b-ece935e4d331.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">시립성북청소년센터 &amp;#39;행복동행학교&amp;#39; 참가자 모집</div><div class="meta">2026.02.22</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=41901577&amp;POST_NO=9053" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2026/02/c4d7907d-eacd-48ee-88c4-26661848e61b.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">칠교 접기</div>
-  <div class="meta light">2026.02.03</div>
+<a class="card" style="--i:0.42s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=41901577&amp;POST_NO=9053" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2026/02/c4d7907d-eacd-48ee-88c4-26661848e61b.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">칠교 접기</div><div class="meta">2026.02.03</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=42435654&amp;POST_NO=8802" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2025/11/b01f328b-c684-4f51-afb4-ed0f441cec74.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">사회공헌활동 목도리 만들기</div>
-  <div class="meta light">2025.11.18</div>
+<a class="card" style="--i:0.48s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=42435654&amp;POST_NO=8802" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/11/b01f328b-c684-4f51-afb4-ed0f441cec74.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">사회공헌활동 목도리 만들기</div><div class="meta">2025.11.18</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=19430676&amp;POST_NO=8508" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2025/08/5a9643b7-94a9-4c34-a8d3-3cfd93949bf4.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light"></div>
-  <div class="meta light">2025.08.30</div>
+<a class="card" style="--i:0.54s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=19430676&amp;POST_NO=8508" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/08/5a9643b7-94a9-4c34-a8d3-3cfd93949bf4.jpg')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/08/dd1629d0-56c2-4da3-886b-2054aeb3959a.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">2025.08.30</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37031382&amp;POST_NO=8387" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2025/07/f536764a-6523-4a1d-ac7c-8b82a84407b0.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">빛그림 정기전</div>
-  <div class="meta light">2025.07.26</div>
+<a class="card" style="--i:0.60s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37031382&amp;POST_NO=8387" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/07/f536764a-6523-4a1d-ac7c-8b82a84407b0.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">빛그림 정기전</div><div class="meta">2025.07.26</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=7301517&amp;POST_NO=7870" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2025/03/47d78dce-d675-40ea-a72e-198365e22489.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">커뮤니티 역량강화 - 디지털 영상편집</div>
-  <div class="meta light">2025.03.11</div>
+<a class="card" style="--i:0.66s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=7301517&amp;POST_NO=7870" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/03/47d78dce-d675-40ea-a72e-198365e22489.jpg')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/03/177c9761-61d0-45c9-823c-ba3be8cb1f5f.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">커뮤니티 역량강화 - 디지털 영상편집</div><div class="meta">2025.03.11</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=42703055&amp;POST_NO=7751" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2025/02/334a5b3f-3119-4102-a621-b11ef9aca5bb.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">1월 활동</div>
-  <div class="meta light">2025.02.14</div>
+<a class="card" style="--i:0.72s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=42703055&amp;POST_NO=7751" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/02/334a5b3f-3119-4102-a621-b11ef9aca5bb.jpg')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2025/02/2e8ebd2f-193a-452a-9df7-aee908dfec68.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">1월 활동</div><div class="meta">2025.02.14</div></div>
 </a>
-<a class="card photo" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=27597810&amp;POST_NO=7309" target="_blank" rel="noopener"
-     style="background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.35) 55%,rgba(0,0,0,.82)),url('https://www.50plus.or.kr/upload/im/2024/09/31d0937f-32a6-406c-be84-3cf702bb475e.jpg')">
-  <span class="pill glass"></span>
-  <div class="grow"></div>
-  <div class="title light">2024 9월 커뮤니티 활동</div>
-  <div class="meta light">2024.09.30</div>
+<a class="card" style="--i:0.78s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=27597810&amp;POST_NO=7309" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on" style="background-image:url('https://www.50plus.or.kr/upload/im/2024/09/31d0937f-32a6-406c-be84-3cf702bb475e.jpg')"></div><div class="photo" style="background-image:url('https://www.50plus.or.kr/upload/im/2024/09/d8147b5a-afb9-4f82-92ec-67648670b148.jpg')"></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">2024 9월 커뮤니티 활동</div><div class="meta">2024.09.30</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=38061486&amp;POST_NO=7110" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title">라탄 토트백</div>
-  
-  <div class="grow"></div>
-  <div class="meta">2024.08.14</div>
+<a class="card" style="--i:0.84s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=38061486&amp;POST_NO=7110" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">라탄 토트백</div><div class="meta">2024.08.14</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37030258&amp;POST_NO=6195" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title">정기모임 안하나요?</div>
-  
-  <div class="grow"></div>
-  <div class="meta">2024.01.22</div>
+<a class="card" style="--i:0.90s" href="https://www.50plus.or.kr/sbc/community-member-post-view.do?CM_NO=37030258&amp;POST_NO=6195" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title">정기모임 안하나요?</div><div class="meta">2024.01.22</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=73531462" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:0.96s" href="https://www.50plus.or.kr/sbc/community-home.do?id=73531462" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=70910302" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.02s" href="https://www.50plus.or.kr/sbc/community-home.do?id=70910302" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=68301489" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.08s" href="https://www.50plus.or.kr/sbc/community-home.do?id=68301489" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=47979341" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.14s" href="https://www.50plus.or.kr/sbc/community-home.do?id=47979341" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=45991081" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.20s" href="https://www.50plus.or.kr/sbc/community-home.do?id=45991081" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=45968416" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.26s" href="https://www.50plus.or.kr/sbc/community-home.do?id=45968416" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=45878503" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.32s" href="https://www.50plus.or.kr/sbc/community-home.do?id=45878503" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=45878281" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.38s" href="https://www.50plus.or.kr/sbc/community-home.do?id=45878281" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=45644012" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.44s" href="https://www.50plus.or.kr/sbc/community-home.do?id=45644012" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=43274665" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.50s" href="https://www.50plus.or.kr/sbc/community-home.do?id=43274665" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=40460677" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.56s" href="https://www.50plus.or.kr/sbc/community-home.do?id=40460677" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=35004420" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.62s" href="https://www.50plus.or.kr/sbc/community-home.do?id=35004420" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=10979681" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.68s" href="https://www.50plus.or.kr/sbc/community-home.do?id=10979681" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
-<a class="card plain" href="https://www.50plus.or.kr/sbc/community-home.do?id=7059667" target="_blank" rel="noopener">
-  <span class="pill"></span>
-  <div class="title"></div>
-  
-  <div class="grow"></div>
-  <div class="meta">커뮤니티 둘러보기</div>
+<a class="card" style="--i:1.74s" href="https://www.50plus.or.kr/sbc/community-home.do?id=7059667" target="_blank" rel="noopener">
+  <div class="stack"><div class="photo on noimg" style="background:linear-gradient(150deg,hsl(0 52% 30%),hsl(40 58% 18%))"><div class="glyph"></div></div></div>
+  <div class="scrim"></div>
+  <span class="badge"><span class="dot"></span></span>
+  <div class="body"><div class="title"></div><div class="meta">커뮤니티 둘러보기</div></div>
 </a>
   </div>
-  <div class="foot">자동 업데이트 · 2026.07.19 07:26</div>
+  <div class="foot">자동 업데이트 · 2026.07.19 07:51</div>
+  <script>
+    document.querySelectorAll('.stack').forEach(function(st, idx){
+      var ph = st.querySelectorAll('.photo');
+      if (ph.length < 2) return;              // 사진 1장 이하면 순환 안 함
+      var i = 0;
+      setTimeout(function(){
+        setInterval(function(){
+          ph[i].classList.remove('on');
+          i = (i + 1) % ph.length;
+          ph[i].classList.add('on');
+        }, 3500);
+      }, idx * 400);                          // 카드마다 시작을 어긋나게
+    });
+  </script>
 </body></html>

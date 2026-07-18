@@ -21,6 +21,7 @@ LIST_URL = BASE + "/sbc/community.do"
 LIST_PAGES = 2
 DELAY = 0.8
 TIMEOUT = 20
+MAX_CARDS = 30                    # 전체 최신글 중 보여줄 카드 수
 KST = timezone(timedelta(hours=9))
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -28,6 +29,10 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 RE_COMMUNITY = re.compile(r'community-home\.do\?id=(\d+)"[^>]*>\s*([^<]+?)\s*<', re.I)
 RE_POST = re.compile(
     r'community-member-post-view\.do\?CM_NO=(\d+)&(?:amp;)?POST_NO=(\d+)"[^>]*>\s*([^<]+?)\s*<', re.I)
+# 게시판 한 줄: 글 링크(제목) + 뒤따르는 작성일
+RE_ROW = re.compile(
+    r'community-member-post-view\.do\?CM_NO=(\d+)&(?:amp;)?POST_NO=(\d+)"[^>]*>\s*([^<]+?)\s*<'
+    r'.*?(\d{4}-\d{2}-\d{2})\s+\d{2}:\d{2}:\d{2}', re.I | re.S)
 RE_DATE = re.compile(r'(\d{4}-\d{2}-\d{2})\s+\d{2}:\d{2}:\d{2}')
 RE_IMG = re.compile(r'(/upload/im/[^"\'\)\s]+?\.(?:jpg|jpeg|png|gif))', re.I)
 RE_AUTHORDATE = re.compile(
@@ -134,30 +139,30 @@ def gather():
                 seen.add(cid); communities.append((cid, clean(name)))
 
     cards = []
+    # 1단계: 각 커뮤니티 게시판에서 최근 글들의 (제목·날짜·링크)만 수집
+    posts = []
     for cid, name in communities:
         try:
             home = fetch(f"{BASE}/sbc/community-home.do?id={cid}"); time.sleep(DELAY)
         except (URLError, HTTPError) as e:
             print(f"[!] {name} 홈 실패: {e}", file=sys.stderr); continue
+        seg = home.split("커뮤니티 게시판")[-1]        # 게시판 영역만
+        for cm, post, title, date in RE_ROW.findall(seg):
+            posts.append({"community": name, "title": clean(title), "date": date,
+                          "url": f"{BASE}/sbc/community-member-post-view.do?CM_NO={cm}&POST_NO={post}"})
 
-        m = RE_POST.search(home)
-        if not m:  # 게시글 없는 커뮤니티 → 소개 카드
-            cards.append({"community": name, "url": f"{BASE}/sbc/community-home.do?id={cid}",
-                          "title": DESC.get(name, name), "sub": "", "meta": "커뮤니티 둘러보기",
-                          "date": "", "photos": []})
-            continue
-        cm, post, title = m.group(1), m.group(2), clean(m.group(3))
-        d = RE_DATE.search(home)
-        date = d.group(1) if d else ""
-        post_url = f"{BASE}/sbc/community-member-post-view.do?CM_NO={cm}&POST_NO={post}"
+    # 2단계: 전체를 날짜순으로 정렬 → 상위 MAX_CARDS개만
+    posts.sort(key=lambda x: x["date"], reverse=True)
+    posts = posts[:MAX_CARDS]
 
+    # 3단계: 상위 글만 본문 방문 → 사진·작성자 수집
+    for pd in posts:
         photos, author = [], ""
         try:
-            detail = fetch(post_url); time.sleep(DELAY)
+            detail = fetch(pd["url"]); time.sleep(DELAY)
             ad = RE_AUTHORDATE.search(detail)
             if ad:
-                author = clean(ad.group(1)); date = ad.group(2)
-            # 본문 영역만: 작성자·날짜 이후 ~ 푸터 이전 (상단 헤더 로고 제외)
+                author = clean(ad.group(1))
             start = ad.end() if ad else 0
             fend = re.search(r'패밀리사이트|Copyright|커뮤니티 가입', detail)
             body = detail[start: fend.start() if fend else len(detail)]
@@ -167,15 +172,16 @@ def gather():
                 u = BASE + path
                 if u not in photos:
                     photos.append(u)
-                if len(photos) >= 5:      # 카드당 최대 5장까지 순환
+                if len(photos) >= 5:
                     break
         except (URLError, HTTPError) as e:
-            print(f"[!] {name} 글 실패: {e}", file=sys.stderr)
+            print(f"[!] 글 방문 실패: {e}", file=sys.stderr)
 
-        meta = (f"{author} · {date.replace('-', '.')}" if author and date
-                else (date.replace('-', '.') if date else "최근 글"))
-        cards.append({"community": name, "url": post_url, "title": title,
-                      "sub": DESC.get(name, ""), "meta": meta, "date": date, "photos": photos})
+        d = pd["date"]
+        meta = (f"{author} · {d.replace('-', '.')}" if author and d
+                else (d.replace('-', '.') if d else "최근 글"))
+        cards.append({"community": pd["community"], "url": pd["url"], "title": pd["title"],
+                      "meta": meta, "date": d, "photos": photos})
     return cards
 
 

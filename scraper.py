@@ -347,6 +347,14 @@ def render(cards, generated):
         }}, 3500);
       }}, idx * 400);                          // 카드마다 시작을 어긋나게
     }});
+    // 자기 높이를 홈페이지(부모 창)에 알려서 iframe이 자동으로 맞추게 함
+    function postHeight(){{
+      var h = document.body.scrollHeight;
+      if (window.parent) window.parent.postMessage({{sb50height: h}}, "*");
+    }}
+    window.addEventListener('load', postHeight);
+    window.addEventListener('resize', postHeight);
+    setInterval(postHeight, 1500);            // 사진 로딩·슬라이드 후에도 맞춤
   </script>
 </body></html>'''
 

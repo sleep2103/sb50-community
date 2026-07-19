@@ -43,6 +43,41 @@ IMG_EXCLUDE = (
     "36dd6ba3-8569-4d3c-9d75-2dddec9537a1",  # 성북50+ 센터 로고
 )
 
+# 커뮤니티 번호(CM_NO) ↔ 이름 대조표 (성북센터 전체 30개)
+NAME_BY_ID = {
+    "73531462": "브레인핏 실버인지",
+    "70910302": "서울 브레인댄스 연구소",
+    "68301489": "FunFun한 긍정사주",
+    "47979341": "두근두근뇌운동",
+    "45991081": "보문 하모니카 커뮤니티",
+    "45968416": "오이시이 니홍고",
+    "45901904": "순수사진예술",
+    "45896744": "향기는 바람을 타고 제품 팩토리",
+    "45878503": "SB하모니카",
+    "45878281": "타로톡방",
+    "45644012": "부동산 경매로 내집 마련하기",
+    "44852593": "성북사랑 KCN 뉴스 시민기자단",
+    "43274665": "옳음환경교육",
+    "42703055": "시니어모델실전",
+    "42435654": "서투른 솜씨자랑",
+    "41901577": "시니어인지플러스",
+    "40460677": "정통연극연구소",
+    "38061486": "토탈공예커뮤니티",
+    "37349798": "중장년 연극단 오아시스",
+    "37031382": "빛그림 동인회",
+    "37030258": "유튜브랑",
+    "35004420": "성북 연필 드로잉반",
+    "27597810": "디지털 세상",
+    "20342101": "맑은누리오카리나",
+    "20211556": "떡사모",
+    "19430676": "하늘바람 오카리나",
+    "10979681": "소통하는 미디어 라이브",
+    "7301517": "디지털 노마드",
+    "7059667": "그린커피",
+    "4347664": "우플",
+}
+RE_CID = re.compile(r'community-home\.do\?id=(\d+)')
+
 
 # ------- 내장 시드 데이터 (첫 화면 생성용. 이후 실제 방문이 덮어씀) -------
 SEED_CARDS = [
@@ -127,28 +162,33 @@ def clean(t):
 
 def gather():
     """실제로 사이트를 방문해 최신 글 카드 목록을 만든다."""
-    communities, seen = [], set()
+    # 방문할 커뮤니티 번호 수집 (목록 페이지 + 대조표 합집합)
+    ids, seen = [], set()
     for p in range(1, LIST_PAGES + 1):
         url = LIST_URL if p == 1 else f"{LIST_URL}?pageIndex={p}&"
         try:
             page = fetch(url); time.sleep(DELAY)
         except (URLError, HTTPError) as e:
             print(f"[!] 목록 {p} 실패: {e}", file=sys.stderr); continue
-        for cid, name in RE_COMMUNITY.findall(page):
+        for cid in RE_CID.findall(page):
             if cid not in seen:
-                seen.add(cid); communities.append((cid, clean(name)))
+                seen.add(cid); ids.append(cid)
+    for cid in NAME_BY_ID:                 # 목록 파싱이 비어도 대조표 커뮤니티는 방문
+        if cid not in seen:
+            seen.add(cid); ids.append(cid)
 
     cards = []
     # 1단계: 각 커뮤니티 게시판에서 최근 글들의 (제목·날짜·링크)만 수집
     posts = []
-    for cid, name in communities:
+    for cid in ids:
         try:
             home = fetch(f"{BASE}/sbc/community-home.do?id={cid}"); time.sleep(DELAY)
         except (URLError, HTTPError) as e:
-            print(f"[!] {name} 홈 실패: {e}", file=sys.stderr); continue
+            print(f"[!] {cid} 홈 실패: {e}", file=sys.stderr); continue
         seg = home.split("커뮤니티 게시판")[-1]        # 게시판 영역만
         for cm, post, title, date in RE_ROW.findall(seg):
-            posts.append({"community": name, "title": clean(title), "date": date,
+            posts.append({"community": NAME_BY_ID.get(cm, "성북50+ 커뮤니티"),
+                          "title": clean(title), "date": date,
                           "url": f"{BASE}/sbc/community-member-post-view.do?CM_NO={cm}&POST_NO={post}"})
 
     # 2단계: 전체를 날짜순으로 정렬 → 상위 MAX_CARDS개만

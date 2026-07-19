@@ -283,35 +283,40 @@ def render(cards, generated):
   *{{box-sizing:border-box;margin:0;padding:0}}
   html,body{{max-width:100%;overflow-x:hidden}}
   body{{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:8px}}
-  header{{padding:6px 6px 14px;border-bottom:1px solid var(--line);margin:0 4px 4px}}
+  header{{padding:6px 8px 16px;margin:0 4px 4px}}
   h1{{font-size:clamp(22px,2.8vw,30px);font-weight:700;letter-spacing:-.03em}}
   .sub-h{{color:var(--dim);font-size:14px;margin-top:6px}}
-  .grid{{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-    padding:18px 4px;align-items:start}}
+  .grid{{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    padding:20px 6px;align-items:start}}
   /* 폰: 2열 고정 + 잘림 방지 */
   @media (max-width:640px){{
-    .grid{{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px 2px}}
-    .body{{padding:12px 12px 14px}}
+    .grid{{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:16px 4px}}
+    .body{{padding:14px 14px 16px}}
     .title{{font-size:14px}}
+    .card{{border-radius:24px}}
   }}
-  .card{{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
-    border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;
-    box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .25s ease,box-shadow .25s ease;
-    opacity:0;transform:translateY(14px);animation:up .55s var(--i,0s) forwards cubic-bezier(.22,.61,.36,1)}}
-  .card:hover{{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.10)}}
+  .card{{position:relative;display:flex;flex-direction:column;background:#fff;
+    border-radius:28px;overflow:hidden;text-decoration:none;color:inherit;
+    box-shadow:0 6px 20px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+    transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .3s ease;
+    opacity:0;transform:translateY(16px);animation:up .55s var(--i,0s) forwards cubic-bezier(.22,.61,.36,1)}}
+  .card:hover{{transform:translateY(-6px);box-shadow:0 22px 48px rgba(0,0,0,.16),0 4px 12px rgba(0,0,0,.06)}}
   @keyframes up{{to{{opacity:1;transform:none}}}}
-  .thumb{{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;background:#f2f2f7}}
+  .thumb{{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;
+    margin:10px 10px 0;width:calc(100% - 20px);border-radius:20px;background:#f2f2f7}}
   .stack{{position:absolute;inset:0}}
   .photo{{position:absolute;inset:0;background-size:cover;background-position:center;
     opacity:0;transition:opacity .9s ease,transform .8s ease}}
   .photo.on{{opacity:1}}
-  .card:hover .photo.on{{transform:scale(1.05)}}
+  .card:hover .photo.on{{transform:scale(1.06)}}
   /* 사진 없는 카드: 차분한 회색 톤 + 커뮤니티 이름 크게 */
   .thumb.noimg{{display:flex;align-items:center;justify-content:center;
     background:linear-gradient(150deg,#eef0f3,#dfe3e8)}}
   .thumb.noimg .glyph{{font-size:clamp(20px,3vw,30px);font-weight:800;letter-spacing:-.03em;
     color:#b7bcc4;text-align:center;line-height:1.15;padding:0 14%}}
-  .body{{padding:16px 16px 18px}}
+  .body{{position:relative;padding:16px 18px 20px;
+    background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(1.4);
+    -webkit-backdrop-filter:blur(20px) saturate(1.4)}}
   .eyebrow{{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
     color:var(--accent);letter-spacing:.01em}}
   .eyebrow .dot{{width:6px;height:6px;border-radius:50%;background:var(--accent)}}

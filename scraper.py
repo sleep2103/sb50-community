@@ -195,14 +195,27 @@ def gather():
     posts.sort(key=lambda x: x["date"], reverse=True)
     posts = posts[:MAX_CARDS]
 
-    # 3단계: 상위 글만 본문 방문 → 사진·작성자 수집
+    # 3단계: 상위 글만 본문 방문 → 사진·작성자·온전한 제목 수집
     for pd in posts:
-        photos, author = [], ""
+        photos, author, title_full = [], "", ""
         try:
             detail = fetch(pd["url"]); time.sleep(DELAY)
             ad = RE_AUTHORDATE.search(detail)
             if ad:
                 author = clean(ad.group(1))
+            # 온전한 제목: 빵부스러기('커뮤니티 게시판') 이후 ~ 작성자·날짜 이전의 제목 heading
+            region = detail.split("커뮤니티 게시판")[-1]
+            if ad and ad.group(0) in region:
+                region = region.split(ad.group(0))[0]
+            mt = re.search(r'<h[1-4][^>]*>(.*?)</h[1-4]>', region, re.S)
+            if mt:
+                cand = clean(mt.group(1)).replace("목록으로", "").strip()
+                if len(cand) >= 2:
+                    title_full = cand
+            if not title_full:                      # 보조: 영역 텍스트에서 제목 추출
+                cand = clean(region).replace("목록으로", "").strip()
+                if 2 <= len(cand) <= 120:
+                    title_full = cand
             start = ad.end() if ad else 0
             fend = re.search(r'패밀리사이트|Copyright|커뮤니티 가입', detail)
             body = detail[start: fend.start() if fend else len(detail)]
@@ -220,7 +233,10 @@ def gather():
         d = pd["date"]
         meta = (f"{author} · {d.replace('-', '.')}" if author and d
                 else (d.replace('-', '.') if d else "최근 글"))
-        cards.append({"community": pd["community"], "url": pd["url"], "title": pd["title"],
+        # 목록 제목이 잘렸거나(…) 비었으면 상세 페이지 제목으로 대체
+        list_title = (pd["title"] or "").rstrip("… .")
+        title = title_full or list_title or "(제목 없음)"
+        cards.append({"community": pd["community"], "url": pd["url"], "title": title,
                       "meta": meta, "date": d, "photos": photos})
     return cards
 

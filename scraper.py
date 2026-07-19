@@ -265,11 +265,19 @@ def render(cards, generated):
   :root{{--ink:#1d1d1f;--dim:#8e8e93;--line:#ececf0;--accent:#0071e3;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,sans-serif;}}
   *{{box-sizing:border-box;margin:0;padding:0}}
+  html,body{{max-width:100%;overflow-x:hidden}}
   body{{background:transparent;color:var(--ink);-webkit-font-smoothing:antialiased;padding:8px}}
   header{{padding:6px 6px 14px;border-bottom:1px solid var(--line);margin:0 4px 4px}}
   h1{{font-size:clamp(22px,2.8vw,30px);font-weight:700;letter-spacing:-.03em}}
   .sub-h{{color:var(--dim);font-size:14px;margin-top:6px}}
-  .grid{{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));padding:18px 4px}}
+  .grid{{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    padding:18px 4px;align-items:start}}
+  /* 폰: 2열 고정 + 잘림 방지 */
+  @media (max-width:640px){{
+    .grid{{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px 2px}}
+    .body{{padding:12px 12px 14px}}
+    .title{{font-size:14px}}
+  }}
   .card{{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
     border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;
     box-shadow:0 1px 3px rgba(0,0,0,.05);transition:transform .25s ease,box-shadow .25s ease;

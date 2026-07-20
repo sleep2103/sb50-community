@@ -333,7 +333,7 @@ def render(cards, generated):
   <div class="grid">
 {grid}
   </div>
-  <div class="foot">자동 업데이트 · {generated}</div>
+  <div class="foot">마지막 확인 · {generated} (KST)</div>
   <script>
     document.querySelectorAll('.stack').forEach(function(st, idx){{
       var ph = st.querySelectorAll('.photo');

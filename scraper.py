@@ -19,9 +19,10 @@ from urllib.error import URLError, HTTPError
 BASE = "https://www.50plus.or.kr"
 LIST_URL = BASE + "/sbc/community.do"
 LIST_PAGES = 2
-DELAY = 0.8
-TIMEOUT = 20
+DELAY = 1.0
+TIMEOUT = 30
 MAX_CARDS = 16                    # 전체 최신글 중 보여줄 카드 수
+MIN_OK = 8                        # 수집이 이보다 적으면 실패로 보고 화면을 안 바꿈
 KST = timezone(timedelta(hours=9))
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
@@ -148,10 +149,18 @@ SEED_CARDS = [
 DESC = {c["community"].split(" ·")[0]: c["title"] for c in SEED_CARDS}
 
 
-def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return r.read().decode("utf-8", errors="replace")
+def fetch(url, tries=3):
+    last = None
+    for t in range(tries):
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9"})
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                return r.read().decode("utf-8", errors="replace")
+        except Exception as e:                     # 실패하면 잠깐 쉬고 재시도
+            last = e
+            time.sleep(1.5 * (t + 1))
+    raise last
 
 
 def clean(t):
@@ -366,10 +375,18 @@ def main():
     args = ap.parse_args()
 
     now = datetime.now(KST).strftime("%Y.%m.%d %H:%M")
-    cards = SEED_CARDS if args.seed else gather()
-    if not cards:
-        print("[!] 수집된 카드가 없습니다. 시드로 대체합니다.", file=sys.stderr)
+    if args.seed:
         cards = SEED_CARDS
+    else:
+        cards = gather()
+        # 수집이 부실하면(사이트 접속 실패 등) 화면을 바꾸지 않고 마지막 정상본을 유지
+        if len(cards) < MIN_OK:
+            print(f"[!] 수집 카드 {len(cards)}개뿐 — index.html 유지(덮어쓰지 않음)",
+                  file=sys.stderr)
+            import os
+            if os.path.exists(args.out):
+                return                              # 기존 정상 화면 그대로 둠
+            cards = SEED_CARDS                      # 파일이 아예 없을 때만 시드로 첫 생성
     html_out = render(cards, now)
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(html_out)

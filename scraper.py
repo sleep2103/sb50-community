@@ -197,11 +197,12 @@ def gather():
         seg = home.split("커뮤니티 게시판")[-1]        # 게시판 영역만
         for cm, post, title, date in RE_ROW.findall(seg):
             posts.append({"community": NAME_BY_ID.get(cm, "성북50+ 커뮤니티"),
-                          "title": clean(title), "date": date,
+                          "title": clean(title), "date": date, "postno": int(post),
                           "url": f"{BASE}/sbc/community-member-post-view.do?CM_NO={cm}&POST_NO={post}"})
 
-    # 2단계: 전체를 날짜순으로 정렬 → 상위 MAX_CARDS개만
-    posts.sort(key=lambda x: x["date"], reverse=True)
+    # 2단계: 글 번호(올린 순서)로 정렬 → 상위 MAX_CARDS개만
+    # (작성일이 같은 글도 글 번호로 하나하나 정확히 구분·정렬됨)
+    posts.sort(key=lambda x: x["postno"], reverse=True)
     posts = posts[:MAX_CARDS]
 
     # 3단계: 상위 글만 본문 방문 → 사진·작성자·온전한 제목 수집
@@ -246,7 +247,7 @@ def gather():
         list_title = (pd["title"] or "").rstrip("… .")
         title = title_full or list_title or "(제목 없음)"
         cards.append({"community": pd["community"], "url": pd["url"], "title": title,
-                      "meta": meta, "date": d, "photos": photos})
+                      "meta": meta, "date": d, "postno": pd["postno"], "photos": photos})
     return cards
 
 
@@ -259,7 +260,7 @@ def gradient_for(name):
 
 
 def render(cards, generated):
-    cards = sorted(cards, key=lambda c: c.get("date") or "", reverse=True)
+    cards = sorted(cards, key=lambda c: c.get("postno", 0), reverse=True)
     items = []
     for i, c in enumerate(cards):
         comm = html.escape(c["community"]); title = html.escape(c["title"])

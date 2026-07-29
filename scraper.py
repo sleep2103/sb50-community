@@ -226,9 +226,9 @@ def gather():
                 cand = clean(region).replace("목록으로", "").strip()
                 if 2 <= len(cand) <= 120:
                     title_full = cand
-            start = ad.end() if ad else 0
-            fend = re.search(r'패밀리사이트|Copyright|커뮤니티 가입', detail)
-            body = detail[start: fend.start() if fend else len(detail)]
+            # 사진: 본문 이미지 전부(헤더 로고만 제외), 최대 5장 — 작성자줄 형식과 무관하게 튼튼히
+            fend = re.search(r'패밀리사이트|Copyright', detail)
+            body = detail[: fend.start() if fend else len(detail)]
             for path in RE_IMG.findall(body):
                 if any(bad in path for bad in IMG_EXCLUDE):
                     continue
